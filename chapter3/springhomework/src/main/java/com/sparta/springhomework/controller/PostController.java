@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor    //멤버로 선언된거중에 final 있으면 니가 알아서 생성해서 써라. 일일히 생성안해줘도댐
 @RestController
@@ -34,6 +35,15 @@ public class PostController {
         //작성 날짜 기준 내림차순
         //return postRepository.findAll();
         //이렇게 하면 안되고 dto 써야함
+
+        return postRepository
+                .findAll().stream()
+                .map(post -> new PostResponse(
+                        post.getUserName(),
+                        post.getPostName(),
+                        post.getPostContent()
+                ))
+                .collect(Collectors.toList())
     }
 
     //단일 게시글 조회
@@ -46,9 +56,9 @@ public class PostController {
     }
 
     //게시글 수정
-   @PutMapping("/api/posts/{postId}")
+    @PutMapping("/api/posts/{postId}")
     public Post updatePost(@PathVariable Long postId, @RequestBody PostRequestDto postRequestDto) {
-       return postService.update(postId, postRequestDto);
+        return postService.update(postId, postRequestDto);
     }
 
     @DeleteMapping("/api/posts/{postId}")
